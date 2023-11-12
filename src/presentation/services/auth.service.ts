@@ -1,4 +1,5 @@
 import { bcryptAdapter } from "../../config/bcrypt.adapter";
+import { JwtAdapter } from "../../config/jwt.adapter";
 import { UserModel } from "../../data";
 import { CustomError, LoginUserDto, RegisterUserDto, UserEntity } from "../../domain";
 
@@ -40,22 +41,27 @@ export class AuthService {
         const user = await UserModel.findOne({ email: loginUserDto.email })
 
         if (!user) {
-            throw CustomError.notFound('Email not found')
+            throw CustomError.notFound('Credentials not found')
         }
 
         //comparar password
         const isMatch = bcryptAdapter.compare(loginUserDto.password, user.password)
 
         if (!isMatch) {
-            throw CustomError.unauthorized('Invalid password')
+            throw CustomError.badRequest('Credentials not found')
         }
 
         //generar token
+        const token = await JwtAdapter.generateToken({id: user._id}, '2h')
+
+        if(!token) {
+            throw CustomError.internal('Error generating token')
+        }
 
         //retornar usuario y token
         const {password, ...rest} = UserEntity.fromObject(user)
 
-        return {user: rest, token: 'ABC'}
+        return {user: rest, token: token}
     }
 
     public validateEmail() {
