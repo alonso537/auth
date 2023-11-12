@@ -1,5 +1,4 @@
 import { regularExps } from "../../../config/regular-exp";
-import { CustomError } from "../../errors/custom.error";
 
 export class RegisterUserDto {
   private constructor(
