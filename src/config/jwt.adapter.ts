@@ -20,11 +20,11 @@ export class JwtAdapter {
   }
 
   static verifyToken(token: string) {
-    try {
-      const decoded = jwt.verify(token, envs.JWT_SECRET);
-      return decoded;
-    } catch (error) {
-      return false;
-    }
+    return new Promise((resolve) => {
+      jwt.verify(token, envs.JWT_SECRET, (err, decoded) => {
+        if (err) return resolve(false);
+        return resolve(decoded);
+      });
+    })
   }
 }

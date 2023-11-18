@@ -95,7 +95,25 @@ export class AuthService {
         return true
     }
 
-    public validateEmail() {
+    public validateEmail = async (token: string) => {
+        const decoded = await JwtAdapter.verifyToken(token)
+        if(!decoded) {
+            throw CustomError.unauthorized('Invalid token')
+        }
+
+        const {email} = decoded as {email: string}
+        if(!email) {
+            throw CustomError.internal('Error validating email')
+        }
+        const user = await UserModel.findOne({email})
+        if(!user) {
+            throw CustomError.internal('User not found')
+        }
+
+        user.emailValidated = true
+        await user.save()
+
+        return true
 
     }
 }
