@@ -18,8 +18,8 @@ export class ProductService {
 
       return product;
     } catch (error) {
-        console.log(error);
-        
+      console.log(error);
+
       throw CustomError.internal(`Internal server error`);
     }
   }
@@ -32,7 +32,9 @@ export class ProductService {
         ProductModel.countDocuments(),
         ProductModel.find()
           .skip((page - 1) * limit)
-          .limit(limit),
+          .limit(limit)
+          .populate("user")
+          .populate("category"),
       ]);
 
       // const total = await CategoryModel.countDocuments();
