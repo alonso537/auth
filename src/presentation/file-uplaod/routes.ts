@@ -3,6 +3,7 @@ import { AuthMiddleware } from '../middlewares'
 import { FileUploadController } from './controller'
 import { FileUpladService } from '../services/file-upload.service'
 import { FileUploadMiddleware } from '../middlewares/file-upload.middleware'
+import { TypeMiddleware } from '../middlewares/type.middleware'
 
 export class FileUploadRoutes {
     static get routes(): Router {
@@ -12,7 +13,9 @@ export class FileUploadRoutes {
 
         const controller = new FileUploadController(fileUploadService)
 
-        router.use(FileUploadMiddleware.containFiles)
+        router.use([FileUploadMiddleware.containFiles, 
+            TypeMiddleware.validType(['users', 'products', 'categories']),
+        ])
 
         // router.get('/', )
         router.post('/single/:type',  controller.uploadFile)
