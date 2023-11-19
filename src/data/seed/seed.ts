@@ -1,5 +1,9 @@
 import { envs } from "../../config/envs";
+import { CategoryModel } from "../mongo/models/category.model";
+import { ProductModel } from "../mongo/models/product.model";
+import { UserModel } from "../mongo/models/user.model";
 import { MongoDatabase } from "../mongo/mongo-database";
+import { seedData } from "./data";
 
 (async () => {
   await MongoDatabase.connect({
@@ -9,8 +13,45 @@ import { MongoDatabase } from "../mongo/mongo-database";
 
   await main();
 
-
-    await MongoDatabase.disconnect();
+  await MongoDatabase.disconnect();
 })();
 
-async function main() {}
+const randomBetween0andX = (x: number) => {
+  return Math.floor(Math.random() * x);
+};
+
+async function main() {
+  //0. borrar todo!
+  await Promise.all([
+    UserModel.deleteMany({}),
+    CategoryModel.deleteMany({}),
+    ProductModel.deleteMany({}),
+  ]);
+
+  //1. crear usuarios
+  const users = await UserModel.insertMany(seedData.users);
+
+  //2. crear categorias
+  const categories = await CategoryModel.insertMany(
+    seedData.categories.map((category) => {
+      return {
+        ...category,
+        user: users[randomBetween0andX(users.length - 1)]._id,
+      };
+    })
+  );
+
+  //3. crear productos
+
+  const products = await ProductModel.insertMany(
+    seedData.products.map((product) => {
+      return {
+        ...product,
+        user: users[randomBetween0andX(users.length - 1)]._id,
+        category: categories[randomBetween0andX(categories.length - 1)]._id,
+      };
+    })
+  );
+
+  console.log("Seed finalizado");
+}
