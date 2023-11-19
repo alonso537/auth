@@ -1,8 +1,11 @@
 import { Request, Response } from "express";
-import { CustomError, PaginationDto } from "../../domain";
+import { CreateProductDto, CustomError, PaginationDto } from "../../domain";
+import { ProductService } from "../services/product.service";
 
 export class ProductController {
-  constructor() // private readonly productService: ProductService,
+  constructor(
+    private readonly productService: ProductService,
+  ) 
   {}
 
   private handleError = (error: unknown, res: Response) => {
@@ -15,7 +18,19 @@ export class ProductController {
     return res.status(500).json({ error: "Internal server error" });
   };
 
-  createProduct = async (req: Request, res: Response) => {};
+  createProduct = async (req: Request, res: Response) => {
+    const [error, createProductDto] = CreateProductDto.create(req.body);
+
+    if (error) {
+      return res.status(400).json({ error });
+    }
+
+    this.productService.createProduct(createProductDto!)
+        .then((product) => res.status(201).json(product))
+        .catch((error) => this.handleError(error, res));
+
+
+  };
 
   getProducts = async (req: Request, res: Response) => {
     const { page = 1, limit = 10 } = req.query;
@@ -23,5 +38,9 @@ export class ProductController {
     if (error) {
       return res.status(400).json({ error });
     }
+
+    this.productService.getProduct(paginationDto!)
+        .then((product) => res.status(200).json(product))
+        .catch((error) => this.handleError(error, res));
   };
 }
