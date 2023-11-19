@@ -15,7 +15,7 @@ export class FileUpladService {
     }
   }
 
-  uploadFile = async (
+   uploadFile = async (
     file: UploadedFile,
     folder: string = "uploads",
     validExtension: string[] = ["jpg", "png", "jpeg", "gif"]
@@ -44,10 +44,16 @@ export class FileUpladService {
   };
 
   uploadMultipleFile = async (
-    file: UploadedFile[],
+    files: UploadedFile[],
     folder: string = "uploads",
     validExtension: string[] = ["jpg", "png", "jpeg", "gif"]
   ) => {
-    return { message: "File uploaded successfully" };
+    const filesNames = await Promise.all(
+        files.map(async (file) => {
+            this.uploadFile(file, folder, validExtension)
+        })
+    )
+
+    return filesNames
   };
 }
