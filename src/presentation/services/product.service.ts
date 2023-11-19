@@ -18,6 +18,8 @@ export class ProductService {
 
       return product;
     } catch (error) {
+        console.log(error);
+        
       throw CustomError.internal(`Internal server error`);
     }
   }

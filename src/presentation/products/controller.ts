@@ -19,7 +19,7 @@ export class ProductController {
   };
 
   createProduct = async (req: Request, res: Response) => {
-    const [error, createProductDto] = CreateProductDto.create(req.body);
+    const [error, createProductDto] = CreateProductDto.create({...req.body, user: req.body.user.id});
 
     if (error) {
       return res.status(400).json({ error });
