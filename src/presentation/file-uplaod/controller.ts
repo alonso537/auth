@@ -26,11 +26,11 @@ export class FileUploadController {
         return res.status(400).json({error: 'Invalid type'})
     }
 
-    if(!req.files || Object.keys(req.files).length === 0) {
-        return res.status(400).json({error: 'No files were uploaded'})
-    }
+    // if(!req.files || Object.keys(req.files).length === 0) {
+    //     return res.status(400).json({error: 'No files were uploaded'})
+    // }
 
-    const file = req.files.file as UploadedFile;
+    const file = req.body.files.at(0) as UploadedFile;
 
     this.fileUploadService.uploadFile(file, `uploads/${type}`)
       .then((result) => {
