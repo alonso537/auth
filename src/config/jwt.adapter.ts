@@ -19,11 +19,11 @@ export class JwtAdapter {
     // return token;
   }
 
-  static verifyToken(token: string) {
+  static verifyToken<T>(token: string): Promise<T | null> {
     return new Promise((resolve) => {
       jwt.verify(token, envs.JWT_SECRET, (err, decoded) => {
-        if (err) return resolve(false);
-        return resolve(decoded);
+        if (err) return resolve(null);
+        return resolve(decoded as T);
       });
     })
   }
