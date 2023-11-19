@@ -1,5 +1,6 @@
 import {Router} from 'express'
 import { CategoryController } from './controller'
+import { AuthMiddleware } from '../middlewares'
 
 export class CategoryRoutes {
     static get routes(): Router {
@@ -9,7 +10,7 @@ export class CategoryRoutes {
 
 
         router.get('/', controller.getCategories)
-        router.post('/', controller.createCategory)
+        router.post('/', [AuthMiddleware.validateJwt], controller.createCategory)
 
         
         return router
